@@ -22,7 +22,7 @@ class _SplashPageState extends State<SplashPage> {
 
   void navigateToMainPage() {
     Navigator.of(context)
-        .pushNamedAndRemoveUntil('/main', (Route<dynamic> route) => false);
+        .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
   }
 
   @override

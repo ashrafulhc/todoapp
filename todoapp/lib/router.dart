@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/src/components/general/fade_in_route.dart';
 import 'package:todoapp/src/pages/home_page.dart';
+import 'package:todoapp/src/pages/login_page.dart';
+import 'package:todoapp/src/pages/signup_page.dart';
 import 'package:todoapp/src/pages/splash_page.dart';
 
 typedef RouterMethod = PageRoute Function(RouteSettings, Map<String, String>);
@@ -23,6 +25,22 @@ final Map<String, RouterMethod> _definitions = {
       settings: settings,
       builder: (context) {
         return HomePage();
+      },
+    );
+  },
+  '/login': (settings, _) {
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (context) {
+        return LoginPage();
+      },
+    );
+  },
+  '/signup': (settings, _) {
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (context) {
+        return SignupPage();
       },
     );
   },
@@ -78,4 +96,12 @@ Route buildRouter(RouteSettings settings) {
       );
     },
   );
+}
+
+void openSignupPage(BuildContext context) {
+  Navigator.of(context).pushReplacementNamed("/signup");
+}
+
+void openLoginPage(BuildContext context) {
+  Navigator.of(context).pushReplacementNamed("/login");
 }
