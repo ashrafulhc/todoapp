@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/src/components/buttons/primary_button.dart';
 import 'package:todoapp/src/services/firebase_auth_service.dart';
+import 'package:todoapp/src/services/firestore_service.dart';
 import 'package:todoapp/src/utils/text_styles.dart';
 
 class HomePage extends StatefulWidget {
@@ -47,15 +48,26 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 40),
             PrimaryButton(
               onPressed: () {
-                FirebaseAuthService.signOut();
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    '/login', (Route<dynamic> route) => false);
+                FirebaseCloudStore.addDataToDB();
               },
-              label: 'Logout',
+              label: 'Add Data',
+            ),
+            SizedBox(height: 20),
+            PrimaryButton(
+              onPressed: () {
+                FirebaseCloudStore.retrieveData();
+              },
+              label: 'Get Data',
             ),
           ],
         ),
       ),
     );
+  }
+
+  _handleSignOut(BuildContext context) {
+    FirebaseAuthService.signOut();
+    Navigator.of(context)
+        .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
   }
 }
