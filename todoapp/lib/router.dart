@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/src/components/general/fade_in_route.dart';
 import 'package:todoapp/src/pages/home_page.dart';
+import 'package:todoapp/src/pages/splash_page.dart';
 
 typedef RouterMethod = PageRoute Function(RouteSettings, Map<String, String>);
 
@@ -10,6 +11,14 @@ typedef RouterMethod = PageRoute Function(RouteSettings, Map<String, String>);
 
 final Map<String, RouterMethod> _definitions = {
   '/': (settings, _) {
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (context) {
+        return SplashPage();
+      },
+    );
+  },
+  '/main': (settings, _) {
     return MaterialPageRoute(
       settings: settings,
       builder: (context) {
