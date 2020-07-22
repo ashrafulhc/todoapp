@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/router.dart';
 import 'package:todoapp/src/components/buttons/primary_button.dart';
+import 'package:todoapp/src/services/firebase_auth_service.dart';
 import 'package:todoapp/src/utils/colors.dart';
 import 'package:todoapp/src/utils/text_styles.dart';
 
@@ -61,9 +62,7 @@ class _SignupPageState extends State<SignupPage> {
 
   Widget _buildSubmitButton(BuildContext context) {
     return PrimaryButton(
-      onPressed: () {
-        print('Button Pressed!!!!!!');
-      },
+      onPressed: () => _handleSignup(context),
       label: 'Signup',
     );
   }
@@ -127,5 +126,16 @@ class _SignupPageState extends State<SignupPage> {
         ),
       ),
     );
+  }
+
+  void _handleSignup(BuildContext context) async {
+    final String email = _emailController.text.trim();
+    final String password = _passwordController.text.trim();
+
+    String userUid = await FirebaseAuthService.signUp(email, password);
+    print('Signup with userId: $userUid');
+    if (userUid != null) {
+      openMainPage(context);
+    }
   }
 }

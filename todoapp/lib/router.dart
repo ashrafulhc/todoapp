@@ -105,3 +105,7 @@ void openSignupPage(BuildContext context) {
 void openLoginPage(BuildContext context) {
   Navigator.of(context).pushReplacementNamed("/login");
 }
+
+void openMainPage(BuildContext context) {
+  Navigator.of(context).pushReplacementNamed("/main");
+}
