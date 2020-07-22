@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:todoapp/src/services/firebase_auth_service.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -9,10 +10,21 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  bool isUserLoggedIn;
+
   @override
   void initState() {
     super.initState();
+    checkUserStatus();
     initAppAndNavigate();
+  }
+
+  Future checkUserStatus() async {
+    if (await FirebaseAuthService.getCurrentUser() != null) {
+      isUserLoggedIn = true;
+    } else {
+      isUserLoggedIn = false;
+    }
   }
 
   Future initAppAndNavigate() async {
@@ -21,8 +33,11 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void navigateToMainPage() {
-    Navigator.of(context)
-        .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
+    isUserLoggedIn
+        ? Navigator.of(context)
+            .pushNamedAndRemoveUntil('/main', (Route<dynamic> route) => false)
+        : Navigator.of(context)
+            .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
   }
 
   @override
