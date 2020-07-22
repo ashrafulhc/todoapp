@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todoapp/src/pages/home_page.dart';
+import 'package:todoapp/router.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -12,8 +12,7 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      //onGenerateRoute: buildRouter,
-      home: HomePage(),
+      onGenerateRoute: buildRouter,
     );
   }
 }
