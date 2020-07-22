@@ -149,7 +149,11 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
+    showAlertDialog(context);
+
     var result = await FirebaseAuthService.loginWithEmail(email, password);
+
+    Navigator.pop(context);
 
     if (result is bool) {
       if (result) {
@@ -160,5 +164,23 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       ShowFlushbar.showFlushbar(context, 'Something Went Wrong!!', 1500);
     }
+  }
+
+  showAlertDialog(BuildContext context) {
+    AlertDialog alert = AlertDialog(
+      content: new Row(
+        children: [
+          CircularProgressIndicator(),
+          Container(margin: EdgeInsets.only(left: 5), child: Text("Loading")),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
