@@ -17,6 +17,7 @@ dependencies:
   flutter_spinkit: ^4.1.2+1
   firebase_auth: ^0.16.1
   flushbar: ^1.10.2
+  cloud_firestore: ^0.13.7
 
 dev_dependencies:
   flutter_test:
