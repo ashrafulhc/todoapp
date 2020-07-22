@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/router.dart';
 import 'package:todoapp/src/components/buttons/primary_button.dart';
+import 'package:todoapp/src/components/show_flushbar/show_flushbar.dart';
 import 'package:todoapp/src/services/firebase_auth_service.dart';
 import 'package:todoapp/src/utils/colors.dart';
 import 'package:todoapp/src/utils/text_styles.dart';
@@ -132,16 +133,32 @@ class _LoginPageState extends State<LoginPage> {
     final String email = _emailController.text.trim();
     final String password = _passwordController.text.trim();
 
+    if (email == '' || email == null) {
+      ShowFlushbar.showFlushbar(context, 'Email Can\'t be Empty', 1500);
+      return;
+    }
+
+    if (password == '' || password == null) {
+      ShowFlushbar.showFlushbar(context, 'Password Can\'t be Empty', 1500);
+      return;
+    }
+
+    if (password.length < 6) {
+      ShowFlushbar.showFlushbar(
+          context, 'Password\'s length is less than 6', 1500);
+      return;
+    }
+
     var result = await FirebaseAuthService.loginWithEmail(email, password);
 
     if (result is bool) {
       if (result) {
         openMainPage(context);
       } else {
-        print('Something went wrong to login!!');
+        ShowFlushbar.showFlushbar(context, 'Something Went Wrong!!', 1500);
       }
     } else {
-      print('Something went wrong to login!!');
+      ShowFlushbar.showFlushbar(context, 'Something Went Wrong!!', 1500);
     }
   }
 }
