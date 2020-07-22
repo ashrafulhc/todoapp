@@ -132,10 +132,16 @@ class _SignupPageState extends State<SignupPage> {
     final String email = _emailController.text.trim();
     final String password = _passwordController.text.trim();
 
-    String userUid = await FirebaseAuthService.signUp(email, password);
-    print('Signup with userId: $userUid');
-    if (userUid != null) {
-      openMainPage(context);
+    var result = await FirebaseAuthService.signUpWithEmail(email, password);
+
+    if (result is bool) {
+      if (result) {
+        openMainPage(context);
+      } else {
+        print('Something went wrong to signup!!');
+      }
+    } else {
+      print('Something went wrong to signup!!');
     }
   }
 }
