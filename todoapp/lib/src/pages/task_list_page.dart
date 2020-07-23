@@ -4,8 +4,10 @@ import 'package:todoapp/src/blocks/event_stream.dart';
 import 'package:todoapp/src/components/show_flushbar/show_flushbar.dart';
 import 'package:todoapp/src/model/category.dart';
 import 'package:todoapp/src/model/event.dart';
+import 'package:todoapp/src/model/task.dart';
 import 'package:todoapp/src/model/user_data.dart';
 import 'package:todoapp/src/pages/add_task.dart';
+import 'package:todoapp/src/pages/edit_task.dart';
 import 'package:todoapp/src/services/firestore_service.dart';
 import 'package:todoapp/src/utils/text_styles.dart';
 
@@ -105,7 +107,7 @@ class _TaskListPageState extends State<TaskListPage> {
                     children: <Widget>[
                       IconButton(
                         icon: Icon(Icons.edit, color: Colors.green),
-                        onPressed: () {},
+                        onPressed: () => _handleEditTask(context, index, category.tasks[index]),
                       ),
                       IconButton(
                         icon: Icon(Icons.delete, color: Colors.red),
@@ -143,5 +145,16 @@ class _TaskListPageState extends State<TaskListPage> {
     ShowFlushbar.showFlushbar(context, 'Deleted Successfully', 1500);
 
     EventStream.putEvent(Event(EventType.DATA_REFRESHED));
+  }
+
+  _handleEditTask(BuildContext context, int index, Task task) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditTaskPage(
+        task: task,
+        categoryIndex: widget.categoryIndex,
+        taskIndex: index,
+      )),
+    );
   }
 }
