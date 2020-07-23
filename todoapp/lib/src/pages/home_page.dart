@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todoapp/router.dart';
 import 'package:todoapp/src/blocks/event_stream.dart';
 import 'package:todoapp/src/components/dialogs/add_category_dialog.dart';
 import 'package:todoapp/src/components/show_flushbar/show_flushbar.dart';
@@ -103,6 +104,7 @@ class _HomePageState extends State<HomePage> {
           child: ListTile(
             onTap: () {
               print('Category card tap!!');
+              openTaskPage(context, data.categories[index], index);
             },
             title: Text(data.categories[index].name,
                 style: ButtonTextStyle.accent),
@@ -130,9 +132,7 @@ class _HomePageState extends State<HomePage> {
     UserData data = await FirebaseCloudStore.retrieveData();
     data.categories.removeAt(index);
     await FirebaseCloudStore.addDataToDB(data);
-    setState(() {
-      ShowFlushbar.showFlushbar(context, "Successfully Deleted!!", 1500);
-    });
+    ShowFlushbar.showFlushbar(context, "Successfully Deleted!!", 1500);
   }
 
   void _handleCategoryEdit(BuildContext context, int index, String name) async {
@@ -146,9 +146,7 @@ class _HomePageState extends State<HomePage> {
     UserData data = await FirebaseCloudStore.retrieveData();
     data.categories[index].name = result;
     await FirebaseCloudStore.addDataToDB(data);
-    setState(() {
-      ShowFlushbar.showFlushbar(context, "Successfully Edited", 1500);
-    });
+    ShowFlushbar.showFlushbar(context, "Successfully Edited", 1500);
   }
 
   void _handleAddCategory(BuildContext context) async {

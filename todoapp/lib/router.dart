@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/src/components/general/fade_in_route.dart';
+import 'package:todoapp/src/model/category.dart';
 import 'package:todoapp/src/pages/home_page.dart';
 import 'package:todoapp/src/pages/login_page.dart';
 import 'package:todoapp/src/pages/signup_page.dart';
 import 'package:todoapp/src/pages/splash_page.dart';
+import 'package:todoapp/src/pages/task_list_page.dart';
 
 typedef RouterMethod = PageRoute Function(RouteSettings, Map<String, String>);
 
@@ -41,6 +43,15 @@ final Map<String, RouterMethod> _definitions = {
       settings: settings,
       builder: (context) {
         return SignupPage();
+      },
+    );
+  },
+  '/task_list_page': (settings, _) {
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (context) {
+        Category category = settings.arguments;
+        return TaskListPage(category: category);
       },
     );
   },
@@ -108,4 +119,16 @@ void openLoginPage(BuildContext context) {
 
 void openMainPage(BuildContext context) {
   Navigator.of(context).pushReplacementNamed("/main");
+}
+
+void openTaskPage(BuildContext context, Category category, int index) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => TaskListPage(
+        category: category,
+        categoryPosition: index,
+      ),
+    ),
+  );
 }
