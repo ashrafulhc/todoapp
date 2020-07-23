@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/router.dart';
 import 'package:todoapp/src/blocks/event_stream.dart';
+import 'package:todoapp/src/components/show_flushbar/show_flushbar.dart';
 import 'package:todoapp/src/model/category.dart';
 import 'package:todoapp/src/model/event.dart';
 import 'package:todoapp/src/model/user_data.dart';
@@ -108,7 +109,7 @@ class _TaskListPageState extends State<TaskListPage> {
                       ),
                       IconButton(
                         icon: Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {},
+                        onPressed: () => _handleDeleteTask(index),
                       ),
                     ],
                   ),
@@ -129,6 +130,17 @@ class _TaskListPageState extends State<TaskListPage> {
     userData.categories[widget.categoryIndex].tasks[index].isFinished =
         !userData.categories[widget.categoryIndex].tasks[index].isFinished;
     FirebaseCloudStore.addDataToDB(userData);
+
+    EventStream.putEvent(Event(EventType.DATA_REFRESHED));
+  }
+
+  _handleDeleteTask(int index) async {
+    UserData userData = await FirebaseCloudStore.retrieveData();
+    userData.categories[widget.categoryIndex].tasks.removeAt(index);
+
+    FirebaseCloudStore.addDataToDB(userData);
+
+    ShowFlushbar.showFlushbar(context, 'Deleted Successfully', 1500);
 
     EventStream.putEvent(Event(EventType.DATA_REFRESHED));
   }
