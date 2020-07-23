@@ -81,12 +81,13 @@ class _HomePageState extends State<HomePage> {
               child: CircularProgressIndicator(),
             );
           }
-          if (snapshot.hasData) {
-            return _categoryListView(context, snapshot.data);
-          } else if (snapshot.data == null) {
+          if (snapshot.data == null ||
+              snapshot.data.categories == null) {
             return Center(
               child: Text('Data is Empty!!'),
             );
+          } else if (snapshot.hasData) {
+            return _categoryListView(context, snapshot.data);
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }
@@ -118,7 +119,8 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[
                 IconButton(
                   icon: Icon(Icons.edit, color: Colors.green),
-                  onPressed: () => _handleCategoryEdit(context, index, data.categories[index].name),
+                  onPressed: () => _handleCategoryEdit(
+                      context, index, data.categories[index].name),
                 ),
                 IconButton(
                   icon: Icon(Icons.delete, color: Colors.red),
@@ -164,18 +166,22 @@ class _HomePageState extends State<HomePage> {
     if (result == null) return;
 
     UserData data = await FirebaseCloudStore.retrieveData();
+
+    print('my gotten data: ${data.categories}');
+
     Category category = new Category(name: result, tasks: new List());
 
-    if (data != null && data.categories != null) {
+    if (data == null || data.categories == null) {
+      UserData userData = UserData();
+      userData.categories = new List();
+      userData.categories.add(category);
+      await FirebaseCloudStore.addDataToDB(data);
+    } else if (data != null && data.categories != null) {
       data.categories.add(category);
       await FirebaseCloudStore.addDataToDB(data);
       return;
     }
 
-    UserData userData = UserData();
-    userData.categories = new List();
-    userData.categories.add(category);
-    await FirebaseCloudStore.addDataToDB(data);
     ShowFlushbar.showFlushbar(context, "Successfully Added", 1500);
     //print('here is the data from db: ${data.categories}');
   }
@@ -189,7 +195,7 @@ class _HomePageState extends State<HomePage> {
   void _handleSearch(BuildContext context) async {
     List<Task> tasks = new List();
     UserData userData = await FirebaseCloudStore.retrieveData();
-    for(Category category in userData.categories) {
+    for (Category category in userData.categories) {
       tasks.addAll(category.tasks);
     }
 

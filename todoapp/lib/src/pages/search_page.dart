@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:todoapp/router.dart';
 import 'package:todoapp/src/components/cards/task_details_card.dart';
 import 'package:todoapp/src/model/task.dart';
-import 'package:todoapp/src/pages/task_details_page.dart';
 
 class WordSearch extends SearchDelegate {
   final List<Task> tasks;

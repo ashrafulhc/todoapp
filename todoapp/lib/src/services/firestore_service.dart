@@ -11,7 +11,7 @@ class FirebaseCloudStore {
 
   static Future addDataToDB(UserData userData) async {
     FirebaseUser user = await FirebaseAuthService.getCurrentUser();
-    if (user != null) {
+    if (user != null && userData != null) {
       String userJsonData = json.encode(userData.toJson());
       await firestoreInstance.collection('users').document(user.uid).setData({
         'userData': userJsonData,
@@ -24,7 +24,7 @@ class FirebaseCloudStore {
 
   static Future<UserData> retrieveData() async {
     FirebaseUser user = await FirebaseAuthService.getCurrentUser();
-    UserData data;
+    UserData data = new UserData();
     await firestoreInstance
         .collection('users')
         .document(user.uid)
@@ -38,7 +38,7 @@ class FirebaseCloudStore {
           data = UserData.fromJson(json.decode(jsonData));
         }
       } catch (e) {
-        print('error: ${e.message}');
+        print('error_firestore_retrieve: ${e.toString()}');
       }
     });
     return data;

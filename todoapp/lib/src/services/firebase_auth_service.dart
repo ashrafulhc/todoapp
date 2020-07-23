@@ -9,7 +9,7 @@ class FirebaseAuthService {
           email: email, password: password);
       return result != null;
     } catch (e) {
-      return e.message;
+      return e.toString();
     }
   }
 
@@ -19,7 +19,7 @@ class FirebaseAuthService {
           email: email, password: password);
       return result.user != null;
     } catch (e) {
-      return e.message;
+      return e.toString();
     }
   }
 

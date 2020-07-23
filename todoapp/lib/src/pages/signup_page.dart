@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:todoapp/router.dart';
 import 'package:todoapp/src/components/buttons/primary_button.dart';
 import 'package:todoapp/src/components/show_flushbar/show_flushbar.dart';
+import 'package:todoapp/src/model/category.dart';
+import 'package:todoapp/src/model/user_data.dart';
 import 'package:todoapp/src/services/firebase_auth_service.dart';
+import 'package:todoapp/src/services/firestore_service.dart';
 import 'package:todoapp/src/utils/colors.dart';
 import 'package:todoapp/src/utils/text_styles.dart';
 
@@ -153,10 +156,14 @@ class _SignupPageState extends State<SignupPage> {
 
     var result = await FirebaseAuthService.signUpWithEmail(email, password);
 
+    UserData userData = new UserData();
+    userData.categories = List<Category>();
+
     Navigator.pop(context);
 
     if (result is bool) {
       if (result) {
+        await FirebaseCloudStore.addDataToDB(userData);
         openMainPage(context);
       } else {
         ShowFlushbar.showFlushbar(context, 'Something Went Wrong!!', 1500);
