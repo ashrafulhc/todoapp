@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:todoapp/src/blocks/event_stream.dart';
+import 'package:todoapp/src/model/event.dart';
 import 'package:todoapp/src/services/firebase_auth_service.dart';
 import 'package:todoapp/src/model/user_data.dart';
 import 'dart:convert';
@@ -13,7 +15,10 @@ class FirebaseCloudStore {
       String userJsonData = json.encode(userData.toJson());
       await firestoreInstance.collection('users').document(user.uid).setData({
         'userData': userJsonData,
-      }).then((value) => print('Successfully added data to DB!!'));
+      }).then((value) {
+        print('Data Added Successfully');
+        EventStream.putEvent(Event(EventType.DATA_ADDED));
+      });
     }
   }
 

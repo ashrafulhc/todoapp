@@ -3,12 +3,24 @@ import 'package:todoapp/src/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 
 class AddCategoryDialog extends StatefulWidget {
+  final text;
+
+  const AddCategoryDialog({Key key, this.text}) : super(key: key);
+
   @override
   _AddCategoryDialogState createState() => _AddCategoryDialogState();
 }
 
 class _AddCategoryDialogState extends State<AddCategoryDialog> {
   TextEditingController _titleController = TextEditingController();
+
+  @override
+  void initState() {
+    if( widget.text != null ) {
+      _titleController.text = widget.text;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +91,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
         Navigator.pop(context, titleName);
       },
       child: Text(
-        "Start",
+        "Done",
         style: ButtonTextStyle.accent,
       ),
     );

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:todoapp/src/blocks/event_stream.dart';
 import 'package:todoapp/src/components/dialogs/add_category_dialog.dart';
+import 'package:todoapp/src/components/show_flushbar/show_flushbar.dart';
 import 'package:todoapp/src/model/category.dart';
+import 'package:todoapp/src/model/event.dart';
 import 'package:todoapp/src/model/user_data.dart';
 import 'package:todoapp/src/services/firebase_auth_service.dart';
 import 'package:todoapp/src/services/firestore_service.dart';
@@ -21,6 +24,24 @@ class _HomePageState extends State<HomePage> {
         _handleSignOut(context);
         break;
     }
+  }
+
+  void refreshUI() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void eventChecker() async {
+    EventStream.getStream().listen((event) {
+      if (event.eventType == EventType.DATA_ADDED) refreshUI();
+    });
+  }
+
+  @override
+  void initState() {
+    eventChecker();
+    super.initState();
   }
 
   @override
@@ -78,12 +99,56 @@ class _HomePageState extends State<HomePage> {
   Widget _categoryListView(BuildContext context, UserData data) {
     return ListView.builder(
       itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(data.categories[index].name, style: ButtonTextStyle.accent),
+        return Card(
+          child: ListTile(
+            onTap: () {
+              print('Category card tap!!');
+            },
+            title: Text(data.categories[index].name,
+                style: ButtonTextStyle.accent),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.edit, color: Colors.green),
+                  onPressed: () => _handleCategoryEdit(context, index, data.categories[index].name),
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => _handleCategoryDelete(context, index),
+                ),
+              ],
+            ),
+          ),
         );
       },
       itemCount: data.categories.length,
     );
+  }
+
+  void _handleCategoryDelete(BuildContext context, int index) async {
+    UserData data = await FirebaseCloudStore.retrieveData();
+    data.categories.removeAt(index);
+    await FirebaseCloudStore.addDataToDB(data);
+    setState(() {
+      ShowFlushbar.showFlushbar(context, "Successfully Deleted!!", 1500);
+    });
+  }
+
+  void _handleCategoryEdit(BuildContext context, int index, String name) async {
+    final result = await showDialog(
+      context: context,
+      builder: (context) {
+        return AddCategoryDialog(text: name);
+      },
+    );
+    if (result == null) return;
+    UserData data = await FirebaseCloudStore.retrieveData();
+    data.categories[index].name = result;
+    await FirebaseCloudStore.addDataToDB(data);
+    setState(() {
+      ShowFlushbar.showFlushbar(context, "Successfully Edited", 1500);
+    });
   }
 
   void _handleAddCategory(BuildContext context) async {
@@ -98,7 +163,7 @@ class _HomePageState extends State<HomePage> {
     UserData data = await FirebaseCloudStore.retrieveData();
     Category category = new Category(name: result, tasks: new List());
 
-    if( data != null && data.categories != null ) {
+    if (data != null && data.categories != null) {
       data.categories.add(category);
       await FirebaseCloudStore.addDataToDB(data);
       return;
@@ -108,9 +173,8 @@ class _HomePageState extends State<HomePage> {
     userData.categories = new List();
     userData.categories.add(category);
     await FirebaseCloudStore.addDataToDB(data);
-
+    ShowFlushbar.showFlushbar(context, "Successfully Added", 1500);
     //print('here is the data from db: ${data.categories}');
-
   }
 
   void _handleSignOut(BuildContext context) {
