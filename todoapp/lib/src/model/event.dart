@@ -11,6 +11,7 @@ class Event {
 enum EventType {
   DATA_ADDED,
   DATA_RETRIEVED,
+  DATA_REFRESHED,
   LOGGED_IN,
   LOGGED_OUT,
 }

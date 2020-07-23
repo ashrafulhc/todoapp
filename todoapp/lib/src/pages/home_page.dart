@@ -104,7 +104,7 @@ class _HomePageState extends State<HomePage> {
           child: ListTile(
             onTap: () {
               print('Category card tap!!');
-              openTaskPage(context, data.categories[index], index);
+              openTaskPage(context, index);
             },
             title: Text(data.categories[index].name,
                 style: ButtonTextStyle.accent),
