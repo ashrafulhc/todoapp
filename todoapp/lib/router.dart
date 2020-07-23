@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/src/components/general/fade_in_route.dart';
 import 'package:todoapp/src/model/category.dart';
+import 'package:todoapp/src/model/task.dart';
 import 'package:todoapp/src/pages/add_task.dart';
 import 'package:todoapp/src/pages/home_page.dart';
 import 'package:todoapp/src/pages/login_page.dart';
 import 'package:todoapp/src/pages/signup_page.dart';
 import 'package:todoapp/src/pages/splash_page.dart';
+import 'package:todoapp/src/pages/task_details_page.dart';
 import 'package:todoapp/src/pages/task_list_page.dart';
 
 typedef RouterMethod = PageRoute Function(RouteSettings, Map<String, String>);
@@ -62,6 +64,15 @@ final Map<String, RouterMethod> _definitions = {
       builder: (context) {
         int position = settings.arguments;
         return AddTaskPage(position: position);
+      },
+    );
+  },
+  '/task_details_page': (settings, _) {
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (context) {
+        Task task = settings.arguments;
+        return TaskDetails(task: task);
       },
     );
   },
@@ -137,4 +148,8 @@ void openAddTaskPage(BuildContext context, int position) {
 
 void openTaskPage(BuildContext context, int position) {
   Navigator.of(context).pushNamed("/task_list_page", arguments: position);
+}
+
+void openTaskDetailsPage(BuildContext context, Task task) {
+  Navigator.of(context).pushNamed("/task_details_page", arguments: task);
 }

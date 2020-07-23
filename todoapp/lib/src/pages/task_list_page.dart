@@ -6,7 +6,6 @@ import 'package:todoapp/src/model/category.dart';
 import 'package:todoapp/src/model/event.dart';
 import 'package:todoapp/src/model/task.dart';
 import 'package:todoapp/src/model/user_data.dart';
-import 'package:todoapp/src/pages/add_task.dart';
 import 'package:todoapp/src/pages/edit_task.dart';
 import 'package:todoapp/src/services/firestore_service.dart';
 import 'package:todoapp/src/utils/text_styles.dart';
@@ -93,6 +92,7 @@ class _TaskListPageState extends State<TaskListPage> {
                 child: ListTile(
                   onTap: () {
                     print('task card tapped!!');
+                    openTaskDetailsPage(context, category.tasks[index]);
                   },
                   leading: Checkbox(
                     value: category.tasks[index].isFinished,
