@@ -18,7 +18,6 @@ class TaskListPage extends StatefulWidget {
 }
 
 class _TaskListPageState extends State<TaskListPage> {
-
   Future<Category> _getCategory() async {
     UserData userData = await FirebaseCloudStore.retrieveData();
     return userData.categories[widget.categoryIndex];
@@ -72,7 +71,10 @@ class _TaskListPageState extends State<TaskListPage> {
         onPressed: () => _handleAddTask(context, widget.categoryIndex),
         tooltip: 'Add Task',
         elevation: 5,
-        child: Icon(Icons.add_circle_outline, size: 32,),
+        child: Icon(
+          Icons.add_circle_outline,
+          size: 32,
+        ),
       ),
     );
   }
@@ -89,17 +91,25 @@ class _TaskListPageState extends State<TaskListPage> {
                   onTap: () {
                     print('task card tapped!!');
                   },
+                  leading: Checkbox(
+                    value: category.tasks[index].isFinished,
+                    onChanged: (newValue) {
+                      _handleMarkAsFinished(index);
+                    },
+                  ),
                   title: Text(category.tasks[index].title,
                       style: ButtonTextStyle.accent),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       IconButton(
-                          icon: Icon(Icons.edit, color: Colors.green),
-                          onPressed: () {}),
+                        icon: Icon(Icons.edit, color: Colors.green),
+                        onPressed: () {},
+                      ),
                       IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {}),
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {},
+                      ),
                     ],
                   ),
                 ),
@@ -112,5 +122,14 @@ class _TaskListPageState extends State<TaskListPage> {
   _handleAddTask(BuildContext context, int index) async {
     //UserData userData = await FirebaseCloudStore.retrieveData();
     openAddTaskPage(context, index);
+  }
+
+  _handleMarkAsFinished(int index) async {
+    UserData userData = await FirebaseCloudStore.retrieveData();
+    userData.categories[widget.categoryIndex].tasks[index].isFinished =
+        !userData.categories[widget.categoryIndex].tasks[index].isFinished;
+    FirebaseCloudStore.addDataToDB(userData);
+
+    EventStream.putEvent(Event(EventType.DATA_REFRESHED));
   }
 }
