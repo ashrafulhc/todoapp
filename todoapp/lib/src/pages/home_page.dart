@@ -5,7 +5,9 @@ import 'package:todoapp/src/components/dialogs/add_category_dialog.dart';
 import 'package:todoapp/src/components/show_flushbar/show_flushbar.dart';
 import 'package:todoapp/src/model/category.dart';
 import 'package:todoapp/src/model/event.dart';
+import 'package:todoapp/src/model/task.dart';
 import 'package:todoapp/src/model/user_data.dart';
+import 'package:todoapp/src/pages/search_page.dart';
 import 'package:todoapp/src/services/firebase_auth_service.dart';
 import 'package:todoapp/src/services/firestore_service.dart';
 import 'package:todoapp/src/utils/text_styles.dart';
@@ -23,6 +25,9 @@ class _HomePageState extends State<HomePage> {
     switch (choice) {
       case 'Logout':
         _handleSignOut(context);
+        break;
+      case 'Search':
+        _handleSearch(context);
         break;
     }
   }
@@ -179,5 +184,15 @@ class _HomePageState extends State<HomePage> {
     FirebaseAuthService.signOut();
     Navigator.of(context)
         .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
+  }
+
+  void _handleSearch(BuildContext context) async {
+    List<Task> tasks = new List();
+    UserData userData = await FirebaseCloudStore.retrieveData();
+    for(Category category in userData.categories) {
+      tasks.addAll(category.tasks);
+    }
+
+    showSearch(context: context, delegate: WordSearch(tasks));
   }
 }
