@@ -9,7 +9,7 @@ class Task {
   String id;
   String title;
   bool isFinished;
-  List<String> subtasks;
+  List<String> subtasks = new List();
 
   factory Task.fromJson(Map<String, dynamic> json) => Task(
         id: json["id"],

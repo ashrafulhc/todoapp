@@ -64,7 +64,7 @@ class ButtonTextStyle {
 
   static const small = TextStyle(
     fontFamily: 'Rubik',
-    color: Color(0xffffffff),
+    color: Colors.black,
     fontSize: 12,
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.normal,
@@ -82,7 +82,7 @@ class ButtonTextStyle {
 class BodyStyle {
   static const bold = TextStyle(
     fontFamily: 'Rubik',
-    color: Color(0xffffffff),
+    color: Colors.black,
     fontSize: 19.657142639160156,
     fontWeight: FontWeight.w700,
     fontStyle: FontStyle.normal,
@@ -90,7 +90,7 @@ class BodyStyle {
 
   static const extraSmall = TextStyle(
     fontFamily: 'Rubik',
-    color: Color(0xffffffff),
+    color: Colors.black,
     fontSize: 10,
     fontWeight: FontWeight.w500,
     fontStyle: FontStyle.normal,
