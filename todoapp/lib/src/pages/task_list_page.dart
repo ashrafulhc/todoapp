@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/router.dart';
 import 'package:todoapp/src/blocks/event_stream.dart';
+import 'package:todoapp/src/components/dropdown/sort_dropdown.dart';
 import 'package:todoapp/src/components/show_flushbar/show_flushbar.dart';
 import 'package:todoapp/src/model/category.dart';
 import 'package:todoapp/src/model/event.dart';
@@ -12,7 +13,6 @@ import 'package:todoapp/src/utils/text_styles.dart';
 
 class TaskListPage extends StatefulWidget {
   final int categoryIndex;
-
   const TaskListPage({Key key, this.categoryIndex}) : super(key: key);
 
   @override
@@ -20,9 +20,50 @@ class TaskListPage extends StatefulWidget {
 }
 
 class _TaskListPageState extends State<TaskListPage> {
-  Future<Category> _getCategory() async {
+  String _currentSortType = "All";
+  final List<String> _dropdownValues = ["All", "Finished", "Unfinished"];
+
+  Future<List<Task>> _getTaskList() async {
     UserData userData = await FirebaseCloudStore.retrieveData();
-    return userData.categories[widget.categoryIndex];
+    List<Task> tasks = userData.categories[widget.categoryIndex].tasks;
+    return tasks;
+  }
+
+  _handleSort(String value) async {
+    _currentSortType = value;
+
+    UserData userData = await FirebaseCloudStore.retrieveData();
+    List<Task> unfinished = new List();
+    List<Task> finished = new List();
+    List<Task> allTask = new List();
+
+    for (Task task in userData.categories[widget.categoryIndex].tasks) {
+      if (!task.isFinished) {
+        unfinished.add(task);
+      }
+    }
+
+    for (Task task in userData.categories[widget.categoryIndex].tasks) {
+      if (task.isFinished) {
+        finished.add(task);
+      }
+    }
+
+    allTask.addAll(userData.categories[widget.categoryIndex].tasks);
+
+    if (value == 'All') {
+      userData.categories[widget.categoryIndex].tasks.shuffle();
+    } else if (value == 'Finished') {
+      finished.addAll(unfinished);
+      userData.categories[widget.categoryIndex].tasks = finished;
+    } else if (value == 'Unfinished') {
+      unfinished.addAll(finished);
+      userData.categories[widget.categoryIndex].tasks = unfinished;
+    }
+
+    await FirebaseCloudStore.addDataToDB(userData);
+
+    setState(() {});
   }
 
   void refreshUI() {
@@ -49,25 +90,30 @@ class _TaskListPageState extends State<TaskListPage> {
       appBar: AppBar(
         title: Text('Tasks'),
       ),
-      body: FutureBuilder(
-        future: _getCategory(),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (snapshot.hasData) {
-            return _taskListview(context, snapshot.data);
-          } else if (snapshot.data == null) {
-            return Center(
-              child: Text('Data is Empty!!'),
-            );
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
-          }
-          return CircularProgressIndicator();
-        },
+      body: Column(
+        children: <Widget>[
+          _buildDropdownRow(),
+          FutureBuilder(
+            future: _getTaskList(),
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (snapshot.hasData) {
+                return Expanded(child: _taskListview(context, snapshot.data));
+              } else if (snapshot.data == null) {
+                return Center(
+                  child: Text('Data is Empty!!'),
+                );
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
+              return CircularProgressIndicator();
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _handleAddTask(context, widget.categoryIndex),
@@ -81,8 +127,28 @@ class _TaskListPageState extends State<TaskListPage> {
     );
   }
 
-  Widget _taskListview(BuildContext context, Category category) {
-    return category == null || category.tasks.isEmpty
+  Widget _buildDropdownRow() {
+    return Padding(
+      padding: const EdgeInsets.all(18.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text('Sort The List:'),
+          SizedBox(width: 30),
+          SortDropdown(
+            currentValue: _currentSortType,
+            itemList: _dropdownValues,
+            onValueChange: (newValue) {
+              _handleSort(newValue);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _taskListview(BuildContext context, List<Task> taskList) {
+    return taskList == null || taskList.isEmpty
         ? Center(
             child: Text('Empty Task'),
           )
@@ -92,22 +158,23 @@ class _TaskListPageState extends State<TaskListPage> {
                 child: ListTile(
                   onTap: () {
                     print('task card tapped!!');
-                    openTaskDetailsPage(context, category.tasks[index]);
+                    openTaskDetailsPage(context, taskList[index]);
                   },
                   leading: Checkbox(
-                    value: category.tasks[index].isFinished,
+                    value: taskList[index].isFinished,
                     onChanged: (newValue) {
                       _handleMarkAsFinished(index);
                     },
                   ),
-                  title: Text(category.tasks[index].title,
+                  title: Text(taskList[index].title,
                       style: ButtonTextStyle.accent),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       IconButton(
                         icon: Icon(Icons.edit, color: Colors.green),
-                        onPressed: () => _handleEditTask(context, index, category.tasks[index]),
+                        onPressed: () =>
+                            _handleEditTask(context, index, taskList[index]),
                       ),
                       IconButton(
                         icon: Icon(Icons.delete, color: Colors.red),
@@ -118,7 +185,7 @@ class _TaskListPageState extends State<TaskListPage> {
                 ),
               );
             },
-            itemCount: category.tasks.length,
+            itemCount: taskList.length,
           );
   }
 
@@ -150,11 +217,13 @@ class _TaskListPageState extends State<TaskListPage> {
   _handleEditTask(BuildContext context, int index, Task task) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EditTaskPage(
-        task: task,
-        categoryIndex: widget.categoryIndex,
-        taskIndex: index,
-      )),
+      MaterialPageRoute(
+        builder: (context) => EditTaskPage(
+          task: task,
+          categoryIndex: widget.categoryIndex,
+          taskIndex: index,
+        ),
+      ),
     );
   }
 }

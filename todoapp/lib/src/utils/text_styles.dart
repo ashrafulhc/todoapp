@@ -96,3 +96,12 @@ class BodyStyle {
     fontStyle: FontStyle.normal,
   );
 }
+class DropdownTextStyle {
+  static const primary = TextStyle(
+    fontFamily: 'CircularStd',
+    color: MyColors.primary,
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    fontStyle: FontStyle.normal,
+  );
+}
