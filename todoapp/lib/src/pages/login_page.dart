@@ -149,18 +149,16 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
+    // start the loading dialog
     showAlertDialog(context);
 
     var result = await FirebaseAuthService.loginWithEmail(email, password);
 
+    // terminate the dialog
     Navigator.pop(context);
 
-    if (result is bool) {
-      if (result) {
-        openMainPage(context);
-      } else {
-        ShowFlushbar.showFlushbar(context, 'Something Went Wrong!!', 1500);
-      }
+    if (result != null) {
+      openMainPage(context);
     } else {
       ShowFlushbar.showFlushbar(context, 'Something Went Wrong!!', 1500);
     }

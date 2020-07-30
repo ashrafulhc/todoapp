@@ -152,6 +152,7 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
+    // start the loading dialog
     showAlertDialog(context);
 
     var result = await FirebaseAuthService.signUpWithEmail(email, password);
@@ -159,15 +160,12 @@ class _SignupPageState extends State<SignupPage> {
     UserData userData = new UserData();
     userData.categories = List<Category>();
 
+    // terminate the dialog
     Navigator.pop(context);
 
-    if (result is bool) {
-      if (result) {
-        await FirebaseCloudStore.addDataToDB(userData);
-        openMainPage(context);
-      } else {
-        ShowFlushbar.showFlushbar(context, 'Something Went Wrong!!', 1500);
-      }
+    if (result != null) {
+      await FirebaseCloudStore.addDataToDB(userData);
+      openMainPage(context);
     } else {
       ShowFlushbar.showFlushbar(context, 'Something Went Wrong!!', 1500);
     }

@@ -7,9 +7,11 @@ class FirebaseAuthService {
     try {
       AuthResult result = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-      return result != null;
-    } catch (e) {
-      return e.toString();
+      FirebaseUser user = result.user;
+      return user;
+    } catch (error) {
+      print(error.toString());
+      return null;
     }
   }
 
@@ -17,9 +19,11 @@ class FirebaseAuthService {
     try {
       AuthResult result = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
-      return result.user != null;
-    } catch (e) {
-      return e.toString();
+      FirebaseUser user = result.user;
+      return user;
+    } catch (error) {
+      print(error.toString());
+      return null;
     }
   }
 
@@ -28,7 +32,12 @@ class FirebaseAuthService {
     return user;
   }
 
-  static Future<void> signOut() async {
-    return _firebaseAuth.signOut();
+  static Future signOut() async {
+    try {
+      return await _firebaseAuth.signOut();
+    } catch (error) {
+      print(error.toString());
+      return null;
+    }
   }
 }
